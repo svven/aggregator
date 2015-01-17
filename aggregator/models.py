@@ -19,6 +19,20 @@ from keys import \
 AD = lambda m: m - BASE_UXTIME # anno Domini
 
 
+class Link(object):
+	"""
+	Link class to cache link data.
+	"""
+	def __init__(self, link_id=None):
+		"Simple init."
+		self.link_id = link_id
+
+	# Getter methods
+	def get_markers(self):
+		"Return all readers that marked the link."
+		return r.smembers(keys.get(LINK_MARKERS, self.link_id))
+
+
 class Reader(object):
 	"""
 	Reader class performs the aggregations on demand 
@@ -89,17 +103,3 @@ class Reader(object):
 		# r.zunionstore(keys.get(READER_EDITION, self.reader_id), keys)
 		# r.zrem(keys.get(READER_EDITION, self.reader_id), *self.marks)
 		scripts.set_edition(keys=[self.reader_id])
-
-
-class Link(object):
-	"""
-	Link class to cache link data.
-	"""
-	def __init__(self, link_id=None):
-		"Simple init."
-		self.link_id = link_id
-
-	# Getter methods
-	def get_markers(self):
-		"Return all readers that marked the link."
-		return r.smembers(keys.get(LINK_MARKERS, self.link_id))

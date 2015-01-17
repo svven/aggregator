@@ -21,4 +21,4 @@ def get(key, id=''):
 	"Param `key` should be one of the `KEYS`."
 	assert key in KEYS, \
 		'Missing redis key: %s' % key
-	return DICT[key] + id
+	return DICT[key] + str(id)
