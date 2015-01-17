@@ -6,13 +6,8 @@ Description
 Reader class performs the aggregations on demand 
 and provides the marks, fellows and news edition for the reader.
 
-? Also used to cache reader data.
 
-? Link class to cache link data.
-
-Note: Moment may refer to:
-
-<https://www.google.com/search?q=define+moment>
+Note: [Moment](https://www.google.com/search?q=define+moment) may refer to:
 
   1. a very brief period of time.
   synonyms: bit, minute, instant, second, split second;
