@@ -10,16 +10,15 @@ from database import \
     Link as DatabaseLink, Reader as DatabaseReader, Mark as DatabaseMark
 
 
-class ExtendedLink(DatabaseLink, AggregatorLink):
+class MixedLink(DatabaseLink, AggregatorLink):
   pass
-class ExtendedReader(DatabaseReader, AggregatorReader):
+class MixedReader(DatabaseReader, AggregatorReader):
     pass
 
 def load():
     "Load all marks of all readers."
     session = db.Session()
-    for reader in session.query(ExtendedReader).yield_per(100):
-        reader.reader_id = reader.id
+    for reader in session.query(MixedReader).yield_per(100):
         marks = list(chain(*[
             (m.link_id, m.moment) for m in reader.marks.\
             order_by(DatabaseMark.moment).limit(config.MARKS_COUNT)
