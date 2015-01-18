@@ -12,8 +12,8 @@ if #fellows_kvkv > 0 then
 	fellows_kkwvv[fellows_no+1] = 'weights'
 	local edition_key = '{{ reader_edition }}' .. reader_id
 	redis.call('zunionstore', edition_key, fellows_no, unpack(fellows_kkwvv))
-	local reads_key = '{{ reader_marks }}' .. reader_id
-	local reads = redis.call('zrevrange', reads_key, 0, -1)
-	redis.call('zrem', edition_key, unpack(reads))
+	local marks_key = '{{ reader_marks }}' .. reader_id
+	local marks = redis.call('zrevrange', marks_key, 0, -1)
+	redis.call('zrem', edition_key, unpack(marks))
 	-- return redis.call('zrevrange', edition_key, 0, -1, 'withscores')
 end

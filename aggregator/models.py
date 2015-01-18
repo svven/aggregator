@@ -56,8 +56,8 @@ class Reader(object):
 		link_ids = marks[::2]
 		moments = [AD(moment) for moment in marks[1::2]]
 		args = utils.unzip(zip(moments, link_ids))
-		# # kwargs = dict([(read[0], read[1]) 
-		# # 	for read in zip(link_ids, moments)])
+		# # kwargs = dict([(mark[0], mark[1]) 
+		# # 	for mark in zip(link_ids, moments)])
 		# # r.zadd(keys.get(READER_MARKS, self.id), **kwargs)
 		# for link_id in link_ids:
 		# 	r.sadd(keys.get(LINK_MARKERS, link_id), self.id)
@@ -91,7 +91,7 @@ class Reader(object):
 	# Setter methods or aggregations
 	def set_fellows(self, marks_count=MARKS_COUNT):
 		"Aggregate fellows based on marks."
-		# keys = [keys.get(LINK_MARKERS, link_id) for link_id in self.marks[:marks_count]]
+		# keys = [keys.get(LINK_MARKERS, link_id) for link_id in self.get_marks(count=marks_count)]
 		# r.zunionstore(keys.get(READER_FELLOWS, self.id), keys)
 		# r.zrem(keys.get(READER_FELLOWS, self.id), self.id)
 		scripts.set_fellows(keys=[self.id], args=[marks_count])
@@ -101,5 +101,5 @@ class Reader(object):
 		# fellows = self.fellows
 		# keys = dict([(keys.get(READER_MARKS, fellow[0]), fellow[1]) for fellow in fellows])
 		# r.zunionstore(keys.get(READER_EDITION, self.id), keys)
-		# r.zrem(keys.get(READER_EDITION, self.id), *self.marks)
+		# r.zrem(keys.get(READER_EDITION, self.id), *self.get_marks(count=0))
 		scripts.set_edition(keys=[self.id])
