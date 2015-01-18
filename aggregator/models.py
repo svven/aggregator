@@ -45,9 +45,10 @@ class Reader(object):
 	# Special methods
 	def mark(self, link_id, moment):
 		"Record link_id as mark at specified uxtime moment."
-		# r.sadd(keys.get(LINK_MARKERS, link_id), self.id)
-		# r.zadd(keys.get(READER_MARKS, self.id), AD(moment), link_id)
-		scripts.mark(keys=[self.id], args=[AD(moment), link_id])
+
+		r.sadd(keys.get(LINK_MARKERS, link_id), self.id)
+		r.zadd(keys.get(READER_MARKS, self.id), AD(moment), link_id)
+		# scripts.mark(keys=[self.id], args=[AD(moment), link_id])
 
 	def mark(self, *marks):
 		"""
@@ -56,50 +57,54 @@ class Reader(object):
 		link_ids = marks[::2]
 		moments = [AD(moment) for moment in marks[1::2]]
 		args = utils.unzip(zip(moments, link_ids))
-		# # kwargs = dict([(mark[0], mark[1]) 
-		# # 	for mark in zip(link_ids, moments)])
-		# # r.zadd(keys.get(READER_MARKS, self.id), **kwargs)
-		# for link_id in link_ids:
-		# 	r.sadd(keys.get(LINK_MARKERS, link_id), self.id)
-		# r.zadd(keys.get(READER_MARKS, self.id), *args)
-		scripts.mark(keys=[self.id], args=args)
+
+		# kwargs = dict([(mark[0], mark[1]) 
+		# 	for mark in zip(link_ids, moments)])
+		# r.zadd(keys.get(READER_MARKS, self.id), **kwargs)
+		for link_id in link_ids:
+			r.sadd(keys.get(LINK_MARKERS, link_id), self.id)
+		r.zadd(keys.get(READER_MARKS, self.id), *args)
+		# scripts.mark(keys=[self.id], args=args)
 
 	def unmark(self, link_id):
 		"Remove link_id from reader_id marks."
-		# r.srem(keys.get(LINK_MARKERS, link_id), self.id)
-		# r.zrem(keys.get(READER_MARKS, self.id), link_id)
-		scripts.unmark(keys=[self.id], args=[link_id])
+		
+		r.srem(keys.get(LINK_MARKERS, link_id), self.id)
+		r.zrem(keys.get(READER_MARKS, self.id), link_id)
+		# scripts.unmark(keys=[self.id], args=[link_id])
 
 	# Getter methods. Pass count 0 to return all
-	def get_marks(self, count=MARKS_COUNT):
+	def get_marks(self, count=MARKS_COUNT, withscores=False):
 		"Return latest reader marks as links."
 		return r.zrange(keys.get(READER_MARKS, self.id),
-			0, count-1, desc=True, withscores=False)
+			0, count-1, desc=True, withscores=withscores)
 
-	def get_fellows(self, count=FELLOWS_COUNT):
+	def get_fellows(self, count=FELLOWS_COUNT, withscores=False):
 		"Return fellows as readers based on recorded marks."
 		self.set_fellows() # real time
 		return r.zrange(keys.get(READER_FELLOWS, self.id), 
-			0, count-1, desc=True, withscores=False)
+			0, count-1, desc=True, withscores=withscores)
 
-	def get_edition(self, count=NEWS_COUNT):
+	def get_edition(self, count=NEWS_COUNT, withscores=False):
 		"Return news edition as links based on fellows."
 		self.set_edition() # real time
 		return r.zrange(keys.get(READER_EDITION, self.id), 
-			0, count-1, desc=True, withscores=False)
+			0, count-1, desc=True, withscores=withscores)
 
 	# Setter methods or aggregations
 	def set_fellows(self, marks_count=MARKS_COUNT):
 		"Aggregate fellows based on marks."
-		# keys = [keys.get(LINK_MARKERS, link_id) for link_id in self.get_marks(count=marks_count)]
-		# r.zunionstore(keys.get(READER_FELLOWS, self.id), keys)
-		# r.zrem(keys.get(READER_FELLOWS, self.id), self.id)
-		scripts.set_fellows(keys=[self.id], args=[marks_count])
+
+		_keys = [keys.get(LINK_MARKERS, link_id) for link_id in self.get_marks(count=marks_count)]
+		r.zunionstore(keys.get(READER_FELLOWS, self.id), _keys)
+		r.zrem(keys.get(READER_FELLOWS, self.id), self.id)
+		# scripts.set_fellows(keys=[self.id], args=[marks_count])
 
 	def set_edition(self):
 		"Aggregate edition based on fellows."
-		# fellows = self.fellows
-		# keys = dict([(keys.get(READER_MARKS, fellow[0]), fellow[1]) for fellow in fellows])
-		# r.zunionstore(keys.get(READER_EDITION, self.id), keys)
-		# r.zrem(keys.get(READER_EDITION, self.id), *self.get_marks(count=0))
-		scripts.set_edition(keys=[self.id])
+
+		fellows = self.get_fellows(withscores=True)
+		_keys = dict([(keys.get(READER_MARKS, fellow[0]), fellow[1]) for fellow in fellows])
+		r.zunionstore(keys.get(READER_EDITION, self.id), _keys)
+		r.zrem(keys.get(READER_EDITION, self.id), *self.get_marks(count=0))
+		# scripts.set_edition(keys=[self.id])
