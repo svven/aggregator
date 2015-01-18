@@ -16,7 +16,7 @@ Note: [Moment](https://www.google.com/search?q=define+moment) may refer to:
 
 Redis Keys
 ----------
-  * `link_markers:link_id` - set of reader_ids that marked the link_id
+  * `link_markers:link_id` - zset of (reader_id, moment) that marked link_id
   * `reader_marks:reader_id` - zset of (link_id, moment) marked by reader_id
   * `reader_fellows:reader_id` - zset of (fellow_id, moment)
   * `reader_edition:reader_id` - zset of (link_id, moment) aka the 

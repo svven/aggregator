@@ -6,7 +6,7 @@ if #ARGV > 0 then
 	local links_no = #ARGV/2
 	for i = 1, links_no do
 		-- link_ids[i] = ARGV[2*i]
-		redis.call('sadd', '{{ link_markers }}' .. ARGV[2*i], reader_id)
+		redis.call('zadd', '{{ link_markers }}' .. ARGV[2*i], ARGV[2*i-1], reader_id)
 	end
 	local reads_key = '{{ reader_marks }}' .. reader_id
 	redis.call('zadd', reads_key, unpack(ARGV))
