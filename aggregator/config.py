@@ -14,8 +14,8 @@ REDIS_DB = 0
 REDIS_PREFIX = 'aggregator'
 
 ## Aggregator
-FELLOWS_COUNT = 15 # to display
-NEWS_COUNT = 30 # to display
-MARKS_COUNT = 30 # to aggregate
+FELLOWS_COUNT = 30
+NEWS_COUNT = 30
+MARKS_COUNT = 30
 
 BASE_UXTIME = 0 # 1388534400 # datetime(2014, 1, 1, 0, 0)

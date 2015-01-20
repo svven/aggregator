@@ -82,6 +82,12 @@ class Reader(object):
 			0, count-1, desc=True, withscores=withscores)
 
 	# Setter methods or aggregations
+	def aggregate(self,
+		moment_min=None, moment_max=None):
+		"Refresh fellows and edition aggregations."
+		self.set_fellows(moment_min=moment_min, moment_max=moment_max)
+		self.set_edition(moment_min=moment_min, moment_max=moment_max)
+
 	def set_fellows(self, 
 		moment_min=None, moment_max=None, marks_count=MARKS_COUNT):
 		"Aggregate fellows based on marks inside moments interval."
