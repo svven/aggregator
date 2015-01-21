@@ -16,7 +16,6 @@ from config import BASE_UXTIME, \
 from keys import \
 	LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION
 
-from utils import unzip
 AD = lambda m: m is not None and m-BASE_UXTIME or None # anno Domini
 
 

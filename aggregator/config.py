@@ -10,7 +10,7 @@ SQLALCHEMY_DATABASE_URI = sqlalchemy_url = 'postgresql://svven@localhost/svven'
 ## Redis
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
-REDIS_DB = 0
+REDIS_DB = 1
 REDIS_PREFIX = 'aggregator'
 
 ## Aggregator

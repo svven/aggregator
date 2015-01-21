@@ -1,5 +1,6 @@
 Aggregator
 ==========
+Aggregator models and helpers working with Redis.
 
 Description
 -----------
