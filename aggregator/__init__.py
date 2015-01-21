@@ -4,8 +4,9 @@ Aggregator intitialization.
 import config
 
 # TODO: Make this generic
-database.config.sqlalchemy_url = config.sqlalchemy_url
-database.config.SQLALCHEMY_DATABASE_URI = config.SQLALCHEMY_DATABASE_URI
+from database import config as database_config
+database_config.sqlalchemy_url = config.sqlalchemy_url
+database_config.SQLALCHEMY_DATABASE_URI = config.SQLALCHEMY_DATABASE_URI
 
 import database
 db = database.db
