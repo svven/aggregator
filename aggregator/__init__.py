@@ -3,12 +3,12 @@ Aggregator intitialization.
 """
 import config
 
-import database
-db = database.db
-
 # TODO: Make this generic
 database.config.sqlalchemy_url = config.sqlalchemy_url
 database.config.SQLALCHEMY_DATABASE_URI = config.SQLALCHEMY_DATABASE_URI
+
+import database
+db = database.db
 
 
 import redis

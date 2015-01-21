@@ -9,6 +9,7 @@ setup(
     author='Alexandru Stanciu',
     author_email='ducu@svven.com',
     packages=find_packages(),
+    include_package_data = True,
     url='https://bitbucket.org/svven/aggregator',
     description='Aggregator models and helpers working with Redis.',
     install_requires=[
