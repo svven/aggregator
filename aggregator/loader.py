@@ -4,9 +4,9 @@ Aggregator loader from database.
 from . import config, db
 from itertools import chain
 
-from aggregator import \
+from models import \
     Link as AggregatorLink, Reader as AggregatorReader
-from database import \
+from database.news.models import \
     Link as DatabaseLink, Reader as DatabaseReader, Mark as DatabaseMark
 
 

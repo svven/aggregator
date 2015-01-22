@@ -3,16 +3,19 @@ Aggregator intitialization.
 """
 import config
 
-# TODO: Make this generic
-from database import config as database_config
-database_config.sqlalchemy_url = config.sqlalchemy_url
-database_config.SQLALCHEMY_DATABASE_URI = config.SQLALCHEMY_DATABASE_URI
+import database, redis
 
-import database
-db = database.db
+def load_config():
+	"Delayed init to allow config updates."
+	global db, r
 
+	## Database
+	database.config.sqlalchemy_url = config.sqlalchemy_url
+	database.config.SQLALCHEMY_DATABASE_URI = config.SQLALCHEMY_DATABASE_URI
+	db = database.db
 
-import redis
-r = redis.StrictRedis(config.REDIS_HOST, config.REDIS_PORT, config.REDIS_DB)
+	## Redis
+	r = redis.StrictRedis(config.REDIS_HOST, config.REDIS_PORT, config.REDIS_DB)
 
-from models import *
+	## Models
+	from models import * # delayed
