@@ -26,8 +26,7 @@ def load_config(updates=None):
 	global db, r
 
 	## Database
-	database.config.sqlalchemy_url = config.sqlalchemy_url
-	database.config.SQLALCHEMY_DATABASE_URI = config.SQLALCHEMY_DATABASE_URI
+	database.load_config(config)
 	db = database.db
 
 	## Redis
