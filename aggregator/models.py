@@ -8,8 +8,8 @@ Note: Moment may refer to:
   2. importance.
   synonyms: importance, significance, weight;
 """
-from . import r
 import config, keys, scripts
+from . import r
 
 from config import BASE_UXTIME, \
 	FELLOWS_COUNT, NEWS_COUNT, MARKS_COUNT

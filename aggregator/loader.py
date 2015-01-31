@@ -1,7 +1,9 @@
 """
 Aggregator loader from database.
 """
-from . import config, db
+import config
+from . import db
+
 from itertools import chain
 
 from models import \
