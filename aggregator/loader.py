@@ -8,7 +8,7 @@ from itertools import chain
 
 from models import \
     Link as AggregatorLink, Reader as AggregatorReader
-from database.news.models import \
+from database.models import \
     Link as DatabaseLink, Reader as DatabaseReader, Mark as DatabaseMark
 
 
