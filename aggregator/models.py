@@ -8,6 +8,8 @@ Note: Moment may refer to:
   2. importance.
   synonyms: importance, significance, weight;
 """
+from __future__ import division
+
 import config, keys, scripts
 from . import r
 
@@ -16,7 +18,7 @@ from config import BASE_UXTIME, \
 from keys import \
 	LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION
 
-AD = lambda m: m is not None and m-BASE_UXTIME or None # anno Domini
+AD = lambda m: m is not None and m/BASE_UXTIME or None # anno Domini
 
 
 class Link(object):

@@ -23,3 +23,24 @@ def init(config_updates=None):
 
     ## Models
     from models import Link, Reader # delayed because of `r`
+
+
+def load():
+    "Load latest reader marks from database."
+    from mixes import MixedReader
+    from database.models import Mark
+    from itertools import chain
+
+    for reader in MixedReader.query.yield_per(100):
+        marks = list(chain(*[
+            (m.link_id, m.moment) for m in reader.marks.\
+            order_by(Mark.moment).limit(config.MARKS_COUNT)
+        ]))
+        reader.mark(*marks)
+
+def aggregate():
+    "Aggregate all loaded reader marks."
+    from mixes import MixedReader
+
+    for reader in MixedReader.query.yield_per(100):
+        reader.aggregate()

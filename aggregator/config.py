@@ -24,11 +24,11 @@ SQLALCHEMY_DATABASE_URI = sqlalchemy_url = 'postgresql://svven@localhost/svven'
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 1
-REDIS_PREFIX = 'aggregator'
+REDIS_PREFIX = 'agg'
 
 ## Aggregator
 FELLOWS_COUNT = 30
 NEWS_COUNT = 30
 MARKS_COUNT = 30
 
-BASE_UXTIME = 0 # 1388534400 # datetime(2014, 1, 1, 0, 0)
+BASE_UXTIME = 1 # 1420070400 # datetime(2015, 1, 1, 0, 0)
