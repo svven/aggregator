@@ -9,16 +9,16 @@ Redis Keys
 from config import REDIS_PREFIX
 
 KEYS = [
-	LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION] = [
-	'link_markers', 'reader_marks', 'reader_fellows', 'reader_edition'
+    LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION] = [
+    'link_markers', 'reader_marks', 'reader_fellows', 'reader_edition'
 ]
 
 DICT = dict(
-	zip(KEYS, [':'.join((REDIS_PREFIX, k, '')) for k in KEYS])
+    zip(KEYS, [':'.join((REDIS_PREFIX, k, '')) for k in KEYS])
 )
 
 def get(key, id=''):
-	"Param `key` should be one of the `KEYS`."
-	assert key in KEYS, \
-		'Missing redis key: %s' % key
-	return DICT[key] + str(id)
+    "Param `key` should be one of the `KEYS`."
+    assert key in KEYS, \
+        'Missing redis key: %s' % key
+    return DICT[key] + str(id)
