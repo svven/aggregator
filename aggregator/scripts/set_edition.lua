@@ -5,12 +5,15 @@ local moment_min, moment_max, fellows_count = unpack(ARGV)
 if moment_min == 'None' then moment_min = '-inf' end
 if moment_max == 'None' then moment_max = '+inf' end
 
+local edition_key = '{{ reader_edition }}' .. reader_id
+redis.call('del', edition_key)
+
 local fellows_key = '{{ reader_fellows }}' .. reader_id
 local fellows_kvkv = redis.call('zrevrange', fellows_key, 0, fellows_count, 
 	'withscores')
+
 if #fellows_kvkv > 0 then
 	local fellows_no = #fellows_kvkv/2
-	local edition_key = '{{ reader_edition }}' .. reader_id
 	if moment_min == '-inf' and moment_max == '+inf' then
 		local fellows_kkwvv = {}
 		for i = 1, fellows_no do
@@ -20,7 +23,6 @@ if #fellows_kvkv > 0 then
 		fellows_kkwvv[fellows_no+1] = 'weights'
 		redis.call('zunionstore', edition_key, fellows_no, unpack(fellows_kkwvv))
 	else
-		redis.call('del', edition_key)
 		for i = 1, fellows_no do
 			local marks_key = '{{ reader_marks }}' .. fellows_kvkv[2*i-1]
 			local fellows_value = fellows_kvkv[2*i]

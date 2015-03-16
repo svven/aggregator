@@ -21,5 +21,6 @@ def _load(template):
 
 mark = r.register_script(_load('mark.lua'))
 unmark = r.register_script(_load('unmark.lua'))
+rem_marks = r.register_script(_load('rem_marks.lua'))
 set_fellows = r.register_script(_load('set_fellows.lua'))
 set_edition = r.register_script(_load('set_edition.lua'))

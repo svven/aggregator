@@ -14,7 +14,7 @@ import config, keys, scripts
 from . import r
 
 from config import BASE_UXTIME, \
-	FELLOWS_COUNT, NEWS_COUNT, MARKS_COUNT
+	FELLOWS_COUNT, NEWS_COUNT, MARKS_COUNT, MARKS_LIMIT
 from keys import \
 	LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION
 
@@ -100,3 +100,8 @@ class Reader(object):
 		"Aggregate edition from moments interval based on fellows."
 		scripts.set_edition(keys=[self.id],
 			args=[AD(moment_min), AD(moment_max), fellows_count])
+
+	# Maintenance methods
+	def rem_marks(self, keep=MARKS_LIMIT):
+		"Remove old marks, keep as many as specified."
+		scripts.rem_marks(keys=[self.id], args=[keep])
