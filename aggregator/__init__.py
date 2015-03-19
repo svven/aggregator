@@ -35,6 +35,7 @@ def load(count=config.MARKS_LIMIT):
             continue
         marks = list(chain(*[
             (m.link_id, m.moment) for m in reader.marks.\
+            join(Link).filter((Link.ignored == None) | (Link.ignored == False)).\
             order_by(Mark.moment.desc()).limit(count)
         ]))
         reader.mark(*marks)
