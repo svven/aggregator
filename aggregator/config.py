@@ -18,10 +18,11 @@ def from_object(updates):
 ## SQLAlchemy
 ## http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html
 # SQLALCHEMY_ECHO = sqlalchemy_echo = True
-SQLALCHEMY_DATABASE_URI = sqlalchemy_url = 'postgresql://svven@localhost/svven'
+DATABASE_HOST = os.environ.get('DATABASE_HOST', 'localhost')
+SQLALCHEMY_DATABASE_URI = sqlalchemy_url = 'postgresql://svven@%s/svven' % DATABASE_HOST
 
 ## Redis
-REDIS_HOST = 'localhost'
+REDIS_HOST = os.environ.get('AGGREGATOR_REDIS_HOST', 'localhost')
 REDIS_PORT = 6379
 REDIS_DB = 1
 REDIS_PREFIX = 'agg'
