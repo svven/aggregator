@@ -27,7 +27,7 @@ def init(config_updates=None):
 def load(count=config.MARKS_LIMIT):
     "Load latest reader marks from database."
     from mixes import MixedReader
-    from database.models import Mark
+    from database.models import Mark, Link
     from itertools import chain
 
     for reader in MixedReader.query.yield_per(100):
