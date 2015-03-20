@@ -1,6 +1,8 @@
 """
 Config settings for aggregator.
 """
+import os
+
 def from_object(updates):
     "Update same name (or prefixed) settings."
     import sys
