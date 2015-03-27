@@ -38,7 +38,8 @@ def load(count=config.MARKS_LIMIT):
             join(Link).filter((Link.ignored == None) | (Link.ignored == False)).\
             order_by(Mark.moment.desc()).limit(count)
         ]))
-        reader.mark(*marks)
+        if marks:
+            reader.mark(*marks)
 
 def aggregate():
     "Aggregate all loaded reader marks."
