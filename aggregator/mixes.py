@@ -17,12 +17,14 @@ class MixedLink(DatabaseLink, AggregatorLink):
 
     @property
     def markers(self):
-        "Sorted link markers."
-        markers_ids = {mid[0]: mid[1] for mid in self.get_markers(withscores=True)}
-        markers = MixedReader.query.filter(MixedReader.id.in_(markers_ids.keys())).all()
-        for m in markers: m.moment = markers_ids[str(m.id)]
-        markers.sort(key=attrgetter('moment'), reverse=True)
-        return markers
+        "Sorted link readers."
+        markers = {marker_id: marker_moment for \
+            marker_id, marker_moment in self.get_markers(withscores=True)}
+        readers = MixedReader.query.filter(MixedReader.id.in_(markers.keys())).all()
+        for reader in readers:
+            reader.moment = markers[str(reader.id)]
+        readers.sort(key=attrgetter('moment'), reverse=True)
+        return readers
 
 
 class MixedReader(DatabaseReader, AggregatorReader):
@@ -34,17 +36,46 @@ class MixedReader(DatabaseReader, AggregatorReader):
     @property
     def fellows(self):
         "Sorted fellow readers."
-        fellows_ids = {fid[0]: fid[1] for fid in self.get_fellows(withscores=True)}
-        fellows = MixedReader.query.filter(MixedReader.id.in_(fellows_ids.keys())).all()
-        for f in fellows: f.fellowship = fellows_ids[str(f.id)]
-        fellows.sort(key=attrgetter('fellowship'), reverse=True)
-        return fellows
+        fellows = {fellow_id: fellow_fellowship for \
+            fellow_id, fellow_fellowship in self.get_fellows(withscores=True)}
+        readers = MixedReader.query.filter(MixedReader.id.in_(fellows.keys())).all()
+        for reader in readers:
+            reader.fellowship = fellows[str(reader.id)]
+        readers.sort(key=attrgetter('fellowship'), reverse=True)
+        return readers
 
     @property
     def edition(self):
         "Sorted edition links."
-        edition_ids = {nid[0]: nid[1] for nid in self.get_edition(count=config.MARKS_LIMIT, withscores=True)}
-        edition = MixedLink.query.filter(MixedLink.id.in_(edition_ids.keys())).all()
-        for n in edition: n.relevance = edition_ids[str(n.id)]
-        edition.sort(key=attrgetter('relevance'), reverse=True)
-        return edition
+        fellows = set(self.get_fellows()) # redundant
+
+        # edition = {news_id: (news_relevance, \
+        #     set.intersection(fellows, set(AggregatorLink(news_id).get_markers()))) \
+        #     for news_id, news_relevance in self.get_edition(withscores=True)}
+
+        edition = {}
+        no_links_by_fellows = {} # {'fid1,fid2':no_links}
+
+        for link_id, link_relevance in \
+            self.get_edition(count=config.NEWS_LIMIT, withscores=True):
+            markers = set(AggregatorLink(link_id).get_markers())
+            link_fellows = set.intersection(fellows, markers)
+            key = ','.join(link_fellows)
+            no_links = no_links_by_fellows.get(key, 0) + 1
+            if no_links > 3:
+                continue
+            else:
+                no_links_by_fellows[key] = no_links
+            edition[link_id] = (link_relevance, link_fellows)
+            if len(edition) >= config.NEWS_COUNT:
+                break
+
+        links = MixedLink.query.filter(MixedLink.id.in_(edition.keys())).all()
+        for link in links:
+            link.relevance, link.fellows_ids = edition[str(link.id)]
+        links.sort(key=attrgetter('relevance'), reverse=True)
+        return links
+
+
+
+
