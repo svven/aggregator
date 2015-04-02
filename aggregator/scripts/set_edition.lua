@@ -25,12 +25,12 @@ if #fellows_kvkv > 0 then
 	else
 		for i = 1, fellows_no do
 			local marks_key = '{{ reader_marks }}' .. fellows_kvkv[2*i-1]
-			local fellows_value = fellows_kvkv[2*i]
+			local fellowship = fellows_kvkv[2*i]
 			local range = redis.call('zrangebyscore', 
 				marks_key, moment_min, moment_max, 'withscores')
 			if #range > 0 then
 				for j = 1, #range, 2 do
-					redis.call('zincrby', edition_key, fellows_value*range[j+1], range[j])
+					redis.call('zincrby', edition_key, fellowship*range[j+1], range[j])
 				end
 			end
 		end
