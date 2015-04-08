@@ -11,9 +11,9 @@ redis.call('del', edition_key)
 local fellows_key = '{{ reader_fellows }}' .. reader_id
 local fellows_kvkv = redis.call('zrevrange', fellows_key, 0, fellows_count, 
 	'withscores')
+local fellows_no = #fellows_kvkv/2
 
 if #fellows_kvkv > 0 then
-	local fellows_no = #fellows_kvkv/2
 	if moment_min == '-inf' and moment_max == '+inf' then
 		local fellows_kkwvv = {}
 		for i = 1, fellows_no do
@@ -39,4 +39,18 @@ if #fellows_kvkv > 0 then
 	local marks = redis.call('zrevrange', marks_key, 0, -1)
 	redis.call('zrem', edition_key, unpack(marks))
 	-- return redis.call('zrevrange', edition_key, 0, -1, 'withscores')
+
+	-- local fellows = {}
+	-- for i = 1, fellows_no do
+	-- 	fellows[i] = fellows_kvkv[2*i-1]
+	-- end
+	local edition = redis.call('zrevrange', edition_key, 0, -1)
+	for i = 1, #edition do
+		local link_id = edition[i]
+		local markers_key = '{{ link_markers }}' .. link_id
+		-- local markers = redis.call('zrevrange', markers_key, 0, -1)
+		-- local temp_key = 
+		-- redis.call('sinterstore', fellows_key, markers_key)
+
+	end
 end

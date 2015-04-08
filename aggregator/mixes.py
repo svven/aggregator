@@ -49,26 +49,25 @@ class MixedReader(DatabaseReader, AggregatorReader):
         "Sorted edition links."
         fellows = set(self.get_fellows()) # redundant
 
-        # edition = {news_id: (news_relevance, \
-        #     set.intersection(fellows, set(AggregatorLink(news_id).get_markers()))) \
-        #     for news_id, news_relevance in self.get_edition(withscores=True)}
+        edition = {news_id: (news_relevance, \
+            set.intersection(fellows, set(AggregatorLink(news_id).get_markers()))) \
+            for news_id, news_relevance in self.get_edition(withscores=True)}
 
-        edition = {}
-        no_links_by_fellows = {} # {'fid1,fid2':no_links}
-
-        for link_id, link_relevance in \
-            self.get_edition(count=config.NEWS_LIMIT, withscores=True):
-            markers = set(AggregatorLink(link_id).get_markers())
-            link_fellows = set.intersection(fellows, markers)
-            key = ','.join(link_fellows)
-            no_links = no_links_by_fellows.get(key, 0) + 1
-            if no_links > 3:
-                continue
-            else:
-                no_links_by_fellows[key] = no_links
-            edition[link_id] = (link_relevance, link_fellows)
-            if len(edition) >= config.NEWS_COUNT:
-                break
+        # edition = {}
+        # no_links_by_fellows = {} # {'fid1,fid2':no_links}
+        # for link_id, link_relevance in \
+        #     self.get_edition(count=config.NEWS_LIMIT, withscores=True):
+        #     markers = set(AggregatorLink(link_id).get_markers())
+        #     link_fellows = set.intersection(fellows, markers)
+        #     key = ','.join(link_fellows)
+        #     no_links = no_links_by_fellows.get(key, 0) + 1
+        #     if no_links > 3:
+        #         continue
+        #     else:
+        #         no_links_by_fellows[key] = no_links
+        #     edition[link_id] = (link_relevance, link_fellows)
+        #     if len(edition) >= config.NEWS_COUNT:
+        #         break
 
         links = MixedLink.query.filter(MixedLink.id.in_(edition.keys())).all()
         for link in links:
