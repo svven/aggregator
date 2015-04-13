@@ -34,6 +34,18 @@ class MixedReader(DatabaseReader, AggregatorReader):
     """
 
     @property
+    def marks(self):
+        "Sorted marked links."
+        marks = {link_id: link_moment for \
+            link_id, link_moment in self.get_marks(withscores=True)}
+        links = MixedLink.query.filter(MixedLink.id.in_(marks.keys())).all()
+        for link in links:
+            link.moment = marks[str(link.id)]
+        links.sort(key=attrgetter('moment'), reverse=True)
+        return links
+
+
+    @property
     def fellows(self):
         "Sorted fellow readers."
         fellows = {fellow_id: fellow_fellowship for \
