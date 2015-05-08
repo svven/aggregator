@@ -3,3 +3,7 @@
 env
 svven_aggregator*
 *.pyc
+*.rdb
+*.txt
+
+aggregate.py
