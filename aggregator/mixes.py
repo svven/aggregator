@@ -50,6 +50,8 @@ class MixedReader(DatabaseReader, AggregatorReader):
         "Sorted fellow readers."
         fellows = {fellow_id: fellow_fellowship for \
             fellow_id, fellow_fellowship in self.get_fellows(withscores=True)}
+        if not fellows:
+            return []
         readers = MixedReader.query.filter(MixedReader.id.in_(fellows.keys())).all()
         for reader in readers:
             reader.fellowship = fellows[str(reader.id)]
@@ -81,6 +83,8 @@ class MixedReader(DatabaseReader, AggregatorReader):
             if len(edition) >= config.NEWS_COUNT:
                 break
 
+        if not edition:
+            return []
         links = MixedLink.query.filter(MixedLink.id.in_(edition.keys())).all()
         for link in links:
             link.relevance, link.fellows_ids = edition[str(link.id)]
