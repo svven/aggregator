@@ -17,17 +17,17 @@ if #fellows_kvkv > 0 then
 	if moment_min == '-inf' and moment_max == '+inf' then
 		local fellows_kkwvv = {}
 		for i = 1, fellows_no do
-			fellows_kkwvv[i] = '{{ reader_marks }}' .. fellows_kvkv[2*i-1]
+			fellows_kkwvv[i] = '{{ reader_picks }}' .. fellows_kvkv[2*i-1]
 			fellows_kkwvv[fellows_no+i+1] = fellows_kvkv[2*i]
 		end
 		fellows_kkwvv[fellows_no+1] = 'weights'
 		redis.call('zunionstore', edition_key, fellows_no, unpack(fellows_kkwvv))
 	else
 		for i = 1, fellows_no do
-			local marks_key = '{{ reader_marks }}' .. fellows_kvkv[2*i-1]
+			local picks_key = '{{ reader_picks }}' .. fellows_kvkv[2*i-1]
 			local fellowship = fellows_kvkv[2*i]
 			local range = redis.call('zrangebyscore', 
-				marks_key, moment_min, moment_max, 'withscores')
+				picks_key, moment_min, moment_max, 'withscores')
 			if #range > 0 then
 				for j = 1, #range, 2 do
 					redis.call('zincrby', edition_key, fellowship*range[j+1], range[j])
@@ -35,9 +35,9 @@ if #fellows_kvkv > 0 then
 			end
 		end
 	end
-	local marks_key = '{{ reader_marks }}' .. reader_id
-	local marks = redis.call('zrevrange', marks_key, 0, -1)
-	redis.call('zrem', edition_key, unpack(marks))
+	local picks_key = '{{ reader_picks }}' .. reader_id
+	local picks = redis.call('zrevrange', picks_key, 0, -1)
+	redis.call('zrem', edition_key, unpack(picks))
 	-- return redis.call('zrevrange', edition_key, 0, -1, 'withscores')
 
 	-- local fellows = {}
@@ -47,10 +47,10 @@ if #fellows_kvkv > 0 then
 	local edition = redis.call('zrevrange', edition_key, 0, -1)
 	for i = 1, #edition do
 		local link_id = edition[i]
-		local markers_key = '{{ link_markers }}' .. link_id
-		-- local markers = redis.call('zrevrange', markers_key, 0, -1)
+		local pickers_key = '{{ link_pickers }}' .. link_id
+		-- local pickers = redis.call('zrevrange', pickers_key, 0, -1)
 		-- local temp_key = 
-		-- redis.call('sinterstore', fellows_key, markers_key)
+		-- redis.call('sinterstore', fellows_key, pickers_key)
 
 	end
 end

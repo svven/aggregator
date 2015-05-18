@@ -24,26 +24,26 @@ def init(config_updates=None):
     ## Models
     from models import Link, Reader # delayed because of `r`
 
-def load(count=config.MARKS_LIMIT):
-    "Load latest reader marks from database."
+def load(count=config.PICKS_LIMIT):
+    "Load latest reader picks from database."
     from mixes import MixedReader
-    from database.models import Mark, Link
+    from database.models import Pick, Link
     from itertools import chain
 
     for reader in MixedReader.query.yield_per(100):
         if reader.ignored:
             continue
-        marks = list(chain(*[
-            (m.link_id, m.moment) for m in Mark.query.join(Link).\
-            filter(Mark.reader_id == reader.id, 
+        picks = list(chain(*[
+            (m.link_id, m.moment) for m in Pick.query.join(Link).\
+            filter(Pick.reader_id == reader.id, 
                 (Link.ignored == None) | (Link.ignored == False)).\
-            order_by(Mark.moment.desc()).limit(count)
+            order_by(Pick.moment.desc()).limit(count)
         ]))
-        if marks:
-            reader.mark(*marks)
+        if picks:
+            reader.pick(*picks)
 
 def aggregate():
-    "Aggregate all loaded reader marks."
+    "Aggregate all loaded reader picks."
     from mixes import MixedReader
 
     for reader in MixedReader.query.yield_per(100):
@@ -51,11 +51,11 @@ def aggregate():
             continue
         reader.aggregate()
 
-def clean(keep=config.MARKS_LIMIT):
-    "Remove old marks."
+def clean(keep=config.PICKS_LIMIT):
+    "Remove old picks."
     from mixes import MixedReader
 
     for reader in MixedReader.query.yield_per(100):
         if reader.ignored:
             continue
-        reader.rem_marks(keep)
+        reader.rem_picks(keep)

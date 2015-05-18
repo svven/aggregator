@@ -1,7 +1,7 @@
 """
 Redis Keys
-  * `link_markers:link_id` - zset of (reader_id, moment) that marked link_id
-  * `reader_marks:reader_id` - zset of (link_id, moment) marked by reader_id
+  * `link_pickers:link_id` - zset of (reader_id, moment) that picked link_id
+  * `reader_picks:reader_id` - zset of (link_id, moment) picked by reader_id
   * `reader_fellows:reader_id` - zset of (fellow_id, moment)
   * `reader_edition:reader_id` - zset of (link_id, moment) aka the 
   relavant news edition
@@ -9,8 +9,8 @@ Redis Keys
 from config import REDIS_PREFIX
 
 KEYS = [
-    LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION] = [
-    'link_markers', 'reader_marks', 'reader_fellows', 'reader_edition'
+    LINK_PICKERS, READER_PICKS, READER_FELLOWS, READER_EDITION] = [
+    'link_pickers', 'reader_picks', 'reader_fellows', 'reader_edition'
 ]
 
 DICT = dict(

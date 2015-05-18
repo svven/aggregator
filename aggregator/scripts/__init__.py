@@ -1,6 +1,6 @@
 """
 Loads lua script from current folder.
-Current script list: mark, unmark, set_fellows, set_edition.
+Current script list: pick, unpick, set_fellows, set_edition.
 """
 import jinja2
 import os.path as path
@@ -19,8 +19,8 @@ def _load(template):
 #     with open(path.join(path.dirname(__file__), script), 'r') as file:
 #         return file.read()
 
-mark = r.register_script(_load('mark.lua'))
-unmark = r.register_script(_load('unmark.lua'))
-rem_marks = r.register_script(_load('rem_marks.lua'))
+pick = r.register_script(_load('pick.lua'))
+unpick = r.register_script(_load('unpick.lua'))
+rem_picks = r.register_script(_load('rem_picks.lua'))
 set_fellows = r.register_script(_load('set_fellows.lua'))
 set_edition = r.register_script(_load('set_edition.lua'))

@@ -14,7 +14,7 @@ import config, keys, scripts
 from . import r
 
 from keys import \
-    LINK_MARKERS, READER_MARKS, READER_FELLOWS, READER_EDITION
+    LINK_PICKERS, READER_PICKS, READER_FELLOWS, READER_EDITION
 
 AD = lambda m: m is not None and m/config.BASE_UXTIME or None # anno Domini
 
@@ -28,48 +28,48 @@ class Link(object):
         self.id = id
 
     # Getter methods
-    def get_markers(self, withscores=False):
-        "Return all readers that marked the link."
-        return r.zrange(keys.get(LINK_MARKERS, self.id),
+    def get_pickers(self, withscores=False):
+        "Return all readers that picked the link."
+        return r.zrange(keys.get(LINK_PICKERS, self.id),
             0, -1, desc=True, withscores=withscores)
 
 
 class Reader(object):
     """
     Reader class performs the aggregations on demand 
-    and provides the marks, fellows and news edition for the reader.
+    and provides the picks, fellows and news edition for the reader.
     """
     def __init__(self, id):
         "Simple init."
         self.id = id
 
     # Special methods
-    def mark(self, link_id, moment):
-        "Record link_id as mark at specified uxtime moment."
-        scripts.mark(keys=[self.id], args=[AD(moment), link_id])
+    def pick(self, link_id, moment):
+        "Record link_id as pick at specified uxtime moment."
+        scripts.pick(keys=[self.id], args=[AD(moment), link_id])
 
-    def mark(self, *marks):
+    def pick(self, *picks):
         """
-        Bulk record the marks specified as [link_id, moment, ..]
+        Bulk record the picks specified as [link_id, moment, ..]
         """
         args = []
-        for i in xrange(0, len(marks), 2):
-            link_id, moment = (marks[i], marks[i+1])
+        for i in xrange(0, len(picks), 2):
+            link_id, moment = (picks[i], picks[i+1])
             args.extend([AD(moment), link_id])
-        scripts.mark(keys=[self.id], args=args)
+        scripts.pick(keys=[self.id], args=args)
 
-    def unmark(self, link_id):
-        "Remove link_id from reader_id marks."
-        scripts.unmark(keys=[self.id], args=[link_id])
+    def unpick(self, link_id):
+        "Remove link_id from reader_id picks."
+        scripts.unpick(keys=[self.id], args=[link_id])
 
     # Getter methods. Pass count 0 to return all
-    def get_marks(self, count=config.MARKS_COUNT, withscores=False):
-        "Return latest reader marks as links."
-        return r.zrange(keys.get(READER_MARKS, self.id),
+    def get_picks(self, count=config.PICKS_COUNT, withscores=False):
+        "Return latest reader picks as links."
+        return r.zrange(keys.get(READER_PICKS, self.id),
             0, count-1, desc=True, withscores=withscores)
 
     def get_fellows(self, count=config.FELLOWS_COUNT, withscores=False):
-        "Return fellows as readers based on recorded marks."
+        "Return fellows as readers based on recorded picks."
         # self.set_fellows() # real time
         return r.zrange(keys.get(READER_FELLOWS, self.id), 
             0, count-1, desc=True, withscores=withscores)
@@ -88,10 +88,10 @@ class Reader(object):
         self.set_edition(moment_min=moment_min, moment_max=moment_max)
 
     def set_fellows(self, 
-        moment_min=None, moment_max=None, marks_count=config.MARKS_COUNT):
-        "Aggregate fellows based on marks inside moments interval."
+        moment_min=None, moment_max=None, picks_count=config.PICKS_COUNT):
+        "Aggregate fellows based on picks inside moments interval."
         scripts.set_fellows(keys=[self.id], 
-            args=[AD(moment_min), AD(moment_max), marks_count])
+            args=[AD(moment_min), AD(moment_max), picks_count])
 
     def set_edition(self,
         moment_min=None, moment_max=None, fellows_count=config.FELLOWS_COUNT):
@@ -100,6 +100,6 @@ class Reader(object):
             args=[AD(moment_min), AD(moment_max), fellows_count])
 
     # Maintenance methods
-    def rem_marks(self, keep=config.MARKS_LIMIT):
-        "Remove old marks, keep as many as specified."
-        scripts.rem_marks(keys=[self.id], args=[keep])
+    def rem_picks(self, keep=config.PICKS_LIMIT):
+        "Remove old picks, keep as many as specified."
+        scripts.rem_picks(keys=[self.id], args=[keep])

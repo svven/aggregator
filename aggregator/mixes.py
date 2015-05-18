@@ -16,13 +16,13 @@ class MixedLink(DatabaseLink, AggregatorLink):
     """
 
     @property
-    def markers(self):
+    def pickers(self):
         "Sorted link readers."
-        markers = {marker_id: marker_moment for \
-            marker_id, marker_moment in self.get_markers(withscores=True)}
-        readers = MixedReader.query.filter(MixedReader.id.in_(markers.keys())).all()
+        pickers = {picker_id: picker_moment for \
+            picker_id, picker_moment in self.get_pickers(withscores=True)}
+        readers = MixedReader.query.filter(MixedReader.id.in_(pickers.keys())).all()
         for reader in readers:
-            reader.moment = markers[str(reader.id)]
+            reader.moment = pickers[str(reader.id)]
         readers.sort(key=attrgetter('moment'), reverse=True)
         return readers
 
@@ -34,13 +34,13 @@ class MixedReader(DatabaseReader, AggregatorReader):
     """
 
     @property
-    def marks(self):
-        "Sorted marked links."
-        marks = {link_id: link_moment for \
-            link_id, link_moment in self.get_marks(withscores=True)}
-        links = MixedLink.query.filter(MixedLink.id.in_(marks.keys())).all()
+    def picks(self):
+        "Sorted picked links."
+        picks = {link_id: link_moment for \
+            link_id, link_moment in self.get_picks(withscores=True)}
+        links = MixedLink.query.filter(MixedLink.id.in_(picks.keys())).all()
         for link in links:
-            link.moment = marks[str(link.id)]
+            link.moment = picks[str(link.id)]
         links.sort(key=attrgetter('moment'), reverse=True)
         return links
 
@@ -64,15 +64,15 @@ class MixedReader(DatabaseReader, AggregatorReader):
         fellows = set(self.get_fellows()) # redundant
 
         # edition = {news_id: (news_relevance, \
-        #     set.intersection(fellows, set(AggregatorLink(news_id).get_markers()))) \
+        #     set.intersection(fellows, set(AggregatorLink(news_id).get_pickers()))) \
         #     for news_id, news_relevance in self.get_edition(withscores=True)}
 
         edition = {}
         no_links_by_fellows = {} # {'fid1,fid2':no_links}
         for link_id, link_relevance in \
             self.get_edition(count=config.NEWS_LIMIT, withscores=True):
-            markers = set(AggregatorLink(link_id).get_markers())
-            link_fellows = set.intersection(fellows, markers)
+            pickers = set(AggregatorLink(link_id).get_pickers())
+            link_fellows = set.intersection(fellows, pickers)
             key = ','.join(link_fellows)
             no_links = no_links_by_fellows.get(key, 0) + 1
             if no_links > 3:
