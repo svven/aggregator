@@ -61,27 +61,27 @@ class MixedReader(DatabaseReader, AggregatorReader):
     @property
     def edition(self):
         "Sorted edition links."
-        fellows = set(self.get_fellows()) # redundant
+        fellows = set(self.get_fellows()) # redundant 
 
-        # edition = {news_id: (news_relevance, \
-        #     set.intersection(fellows, set(AggregatorLink(news_id).get_pickers()))) \
-        #     for news_id, news_relevance in self.get_edition(withscores=True)}
+        edition = {news_id: (news_relevance, \
+            set.intersection(set(AggregatorLink(news_id).get_pickers()), fellows)) \
+            for news_id, news_relevance in self.get_edition(withscores=True)}
 
-        edition = {}
-        no_links_by_fellows = {} # {'fid1,fid2':no_links}
-        for link_id, link_relevance in \
-            self.get_edition(count=config.NEWS_LIMIT, withscores=True):
-            pickers = set(AggregatorLink(link_id).get_pickers())
-            link_fellows = set.intersection(fellows, pickers)
-            key = ','.join(link_fellows)
-            no_links = no_links_by_fellows.get(key, 0) + 1
-            if no_links > 3:
-                continue
-            else:
-                no_links_by_fellows[key] = no_links
-            edition[link_id] = (link_relevance, link_fellows)
-            if len(edition) >= config.NEWS_COUNT:
-                break
+        # edition = {}
+        # no_links_by_fellows = {} # {'fid1,fid2':no_links}
+        # for link_id, link_relevance in \
+        #     self.get_edition(count=config.NEWS_LIMIT, withscores=True):
+        #     pickers = set(AggregatorLink(link_id).get_pickers())
+        #     link_fellows = set.intersection(fellows, pickers)
+        #     key = ','.join(link_fellows)
+        #     no_links = no_links_by_fellows.get(key, 0) + 1
+        #     if no_links > 3:
+        #         continue
+        #     else:
+        #         no_links_by_fellows[key] = no_links
+        #     edition[link_id] = (link_relevance, link_fellows)
+        #     if len(edition) >= config.NEWS_COUNT:
+        #         break
 
         if not edition:
             return []

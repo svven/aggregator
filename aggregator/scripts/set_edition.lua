@@ -39,18 +39,38 @@ if #fellows_kvkv > 0 then
 	local picks = redis.call('zrevrange', picks_key, 0, -1)
 	redis.call('zrem', edition_key, unpack(picks))
 	-- return redis.call('zrevrange', edition_key, 0, -1, 'withscores')
+	
+	local find = function(e, t)
+		for _, e_ in ipairs(t) do if e_ == e then return true end end
+	end
+	local intersection = function(t1, t2)
+		local ret = {}
+		for _, e in ipairs(t2) do
+			if find(e, t1) then table.insert(ret, e) end
+		end
+		return ret
+	end
 
-	-- local fellows = {}
-	-- for i = 1, fellows_no do
-	-- 	fellows[i] = fellows_kvkv[2*i-1]
-	-- end
+	local fellows = {}
+	for i = 1, fellows_no do
+		fellows[i] = fellows_kvkv[2*i-1]
+	end
 	local edition = redis.call('zrevrange', edition_key, 0, -1)
+	local no_links_by_fellows = {}
 	for i = 1, #edition do
 		local link_id = edition[i]
 		local pickers_key = '{{ link_pickers }}' .. link_id
-		-- local pickers = redis.call('zrevrange', pickers_key, 0, -1)
-		-- local temp_key = 
-		-- redis.call('sinterstore', fellows_key, pickers_key)
+		local pickers = redis.call('zrevrange', pickers_key, 0, -1)
 
+		local link_fellows = intersection(pickers, fellows)
+		local link_fellows_key = table.concat(link_fellows, ",")
+		no_links_by_fellows[link_fellows_key] = (no_links_by_fellows[link_fellows_key] or 0) + 1
+
+		if no_links_by_fellows[link_fellows_key] > 3 then
+			redis.call('zrem', edition_key, link_id)
+		end
+	end
+	for k, v in pairs(no_links_by_fellows) do
+		print(k, v)
 	end
 end
