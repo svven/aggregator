@@ -9,7 +9,7 @@ local edition_key = '{{ reader_edition }}' .. reader_id
 redis.call('del', edition_key)
 
 local fellows_key = '{{ reader_fellows }}' .. reader_id
-local fellows_kvkv = redis.call('zrevrange', fellows_key, 0, fellows_count, 
+local fellows_kvkv = redis.call('zrevrange', fellows_key, 0, fellows_count-1, 
 	'withscores')
 local fellows_no = #fellows_kvkv/2
 
@@ -63,14 +63,12 @@ if #fellows_kvkv > 0 then
 		local pickers = redis.call('zrevrange', pickers_key, 0, -1)
 
 		local link_fellows = intersection(pickers, fellows)
+		table.sort(link_fellows)
 		local link_fellows_key = table.concat(link_fellows, ",")
 		no_links_by_fellows[link_fellows_key] = (no_links_by_fellows[link_fellows_key] or 0) + 1
 
 		if no_links_by_fellows[link_fellows_key] > 3 then
 			redis.call('zrem', edition_key, link_id)
 		end
-	end
-	for k, v in pairs(no_links_by_fellows) do
-		print(k, v)
 	end
 end

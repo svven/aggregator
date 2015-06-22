@@ -72,7 +72,7 @@ class MixedReader(DatabaseReader, AggregatorReader):
         # for link_id, link_relevance in \
         #     self.get_edition(count=config.NEWS_LIMIT, withscores=True):
         #     pickers = set(AggregatorLink(link_id).get_pickers())
-        #     link_fellows = set.intersection(fellows, pickers)
+        #     link_fellows = sorted(set.intersection(fellows, pickers))
         #     key = ','.join(link_fellows)
         #     no_links = no_links_by_fellows.get(key, 0) + 1
         #     if no_links > 3:

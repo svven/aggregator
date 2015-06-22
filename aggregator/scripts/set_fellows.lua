@@ -9,7 +9,7 @@ local fellows_key = '{{ reader_fellows }}' .. reader_id
 redis.call('del', fellows_key)
 
 local picks_key = '{{ reader_picks }}' .. reader_id
-local picks = redis.call('zrevrange', picks_key, 0, picks_count)
+local picks = redis.call('zrevrange', picks_key, 0, picks_count-1)
 
 if #picks > 0 then
 	if moment_min == '-inf' and moment_max == '+inf' then
