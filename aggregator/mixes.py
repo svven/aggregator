@@ -61,10 +61,9 @@ class MixedReader(DatabaseReader, AggregatorReader):
     @property
     def edition(self):
         "Sorted edition links."
-        fellows = set(self.get_fellows()) # redundant 
-
+        edition_fellows = self.get_edition_fellows()
         edition = {news_id: (news_relevance, \
-            set.intersection(set(AggregatorLink(news_id).get_pickers()), fellows)) \
+            [int(fid) for fid in edition_fellows[news_id].split(',')]) \
             for news_id, news_relevance in self.get_edition(withscores=True)}
 
         # edition = {}

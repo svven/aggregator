@@ -57,6 +57,9 @@ if #fellows_kvkv > 0 then
 	end
 	local edition = redis.call('zrevrange', edition_key, 0, -1)
 	local no_links_by_fellows = {}
+	local edition_fellows_key = '{{ edition_fellows }}' .. reader_id
+	redis.call('del', edition_fellows_key)
+	
 	for i = 1, #edition do
 		local link_id = edition[i]
 		local pickers_key = '{{ link_pickers }}' .. link_id
@@ -69,6 +72,8 @@ if #fellows_kvkv > 0 then
 
 		if no_links_by_fellows[link_fellows_key] > 3 then
 			redis.call('zrem', edition_key, link_id)
+		else
+			redis.call('hset', edition_fellows_key, link_id, link_fellows_key)
 		end
 	end
 end

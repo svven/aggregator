@@ -14,7 +14,7 @@ import config, keys, scripts
 from . import r
 
 from keys import \
-    LINK_PICKERS, READER_PICKS, READER_FELLOWS, READER_EDITION
+    LINK_PICKERS, READER_PICKS, READER_FELLOWS, READER_EDITION, EDITION_FELLOWS
 
 AD = lambda m: m is not None and m/config.BASE_UXTIME or None # anno Domini
 
@@ -79,6 +79,10 @@ class Reader(object):
         # self.set_edition() # real time
         return r.zrange(keys.get(READER_EDITION, self.id), 
             0, count-1, desc=True, withscores=withscores)
+
+    def get_edition_fellows(self):
+        "Return link fellows from edition."
+        return r.hgetall(keys.get(EDITION_FELLOWS, self.id))
 
     # Setter methods or aggregations
     def aggregate(self,

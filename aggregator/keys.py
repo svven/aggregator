@@ -9,8 +9,8 @@ Redis Keys
 from config import REDIS_PREFIX
 
 KEYS = [
-    LINK_PICKERS, READER_PICKS, READER_FELLOWS, READER_EDITION] = [
-    'link_pickers', 'reader_picks', 'reader_fellows', 'reader_edition'
+    LINK_PICKERS, READER_PICKS, READER_FELLOWS, READER_EDITION, EDITION_FELLOWS] = [
+    'link_pickers', 'reader_picks', 'reader_fellows', 'reader_edition', 'edition_fellows'
 ]
 
 DICT = dict(
