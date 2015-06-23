@@ -38,13 +38,18 @@ class MixedReader(DatabaseReader, AggregatorReader):
     """
     def __init__(self):
         "Simple init."
+        self.init()
+
+    def init(self):
         self._picks = None
         self._fellows = None
         self._edition = None
 
-    @property
-    def picks(self):
-        "Sorted picked links."
+    def load(self):
+        "Load details from database."
+        self.init()
+
+        # Picks
         picks = {int(link_id): link_moment for \
             link_id, link_moment in self.get_picks(withscores=True)}
         links = MixedLink.query.filter(MixedLink.id.in_(picks.keys())).all()
@@ -52,45 +57,50 @@ class MixedReader(DatabaseReader, AggregatorReader):
             link.moment = picks[link.id]
         links.sort(key=attrgetter('moment'), reverse=True)
         self._picks = links
-        return self._picks
 
+        # Fellows
+        fellows = {int(fellow_id): fellow_fellowship for \
+            fellow_id, fellow_fellowship in self.get_fellows(withscores=True)}
+        if fellows:
+            readers = MixedReader.query.filter(MixedReader.id.in_(fellows.keys())).all()
+            for reader in readers:
+                reader.fellowship = fellows[reader.id]
+            readers.sort(key=attrgetter('fellowship'), reverse=True)
+        else:
+            readers = []
+        self._fellows = readers
+
+        # Edition
+        edition_fellows = self.get_edition_fellows()
+        edition = {int(news_id): (news_relevance, \
+            [int(fellow_id) for fellow_id in edition_fellows[news_id].split(',')]) \
+            for news_id, news_relevance in self.get_edition(withscores=True)}
+        if edition:
+            links = MixedLink.query.filter(MixedLink.id.in_(edition.keys())).all()
+            for link in links:
+                link.relevance, link.fellows_ids = edition[link.id]
+            links.sort(key=attrgetter('relevance'), reverse=True)
+            fellows = self._fellows
+            fellows_dict = {f.id: f for f in fellows}
+            for link in links:
+                link.fellows = [fellows_dict[fid] for fid in link.fellows_ids]
+                link.fellows.sort(key=attrgetter('fellowship'), reverse=True)
+        else:
+            links = []
+        self._edition = links
+
+    ## Loaded properties
+    @property
+    def picks(self):
+        "Sorted picked links."
+        return self._picks
 
     @property
     def fellows(self):
         "Sorted fellow readers."
-        fellows = {int(fellow_id): fellow_fellowship for \
-            fellow_id, fellow_fellowship in self.get_fellows(withscores=True)}
-        if not fellows:
-            return []
-        readers = MixedReader.query.filter(MixedReader.id.in_(fellows.keys())).all()
-        for reader in readers:
-            reader.fellowship = fellows[reader.id]
-        readers.sort(key=attrgetter('fellowship'), reverse=True)
-        self._fellows = readers
         return self._fellows
 
     @property
     def edition(self):
         "Sorted edition links."
-        edition_fellows = self.get_edition_fellows()
-        edition = {int(news_id): (news_relevance, \
-            [int(fellow_id) for fellow_id in edition_fellows[news_id].split(',')]) \
-            for news_id, news_relevance in self.get_edition(withscores=True)}
-        if not edition:
-            return []
-        links = MixedLink.query.filter(MixedLink.id.in_(edition.keys())).all()
-        for link in links:
-            link.relevance, link.fellows_ids = edition[link.id]
-        links.sort(key=attrgetter('relevance'), reverse=True)
-
-        fellows = self._fellows or self.fellows
-        fellows_dict = {f.id: f for f in fellows}
-        for link in links:
-            link.fellows = [fellows_dict[fid] for fid in link.fellows_ids]
-            link.fellows.sort(key=attrgetter('fellowship'), reverse=True)
-        self._edition = links
         return self._edition
-
-
-
-
