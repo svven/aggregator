@@ -36,8 +36,9 @@ class MixedReader(DatabaseReader, AggregatorReader):
     Reader mix from database and aggregator.
     Retrieve from database and sort aggregated data (i.e. fellows, edition)
     """
-    def __init__(self):
-        "Simple init."
+    def __init__(self, **kwargs):
+        "Base init."
+        super(MixedReader, self).__init__(**kwargs)
         self.init()
 
     def init(self):
