@@ -14,8 +14,9 @@ class MixedLink(DatabaseLink, AggregatorLink):
     """
     Link mix from database and aggregator.
     """
-    def __init__(self):
-        "Simple init."
+    def __init__(self, **kwargs):
+        "Base init."
+        super(MixedLink, self).__init__(**kwargs)
         self._pickers = None
 
     @property
