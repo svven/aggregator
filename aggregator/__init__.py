@@ -59,3 +59,19 @@ def clean(keep=config.PICKS_LIMIT):
         if reader.ignored:
             continue
         reader.rem_picks(keep)
+
+def ignore(screen_name):
+    "Mark specified user as ignored and clean its picks."
+    from mixes import MixedReader
+    from database.models import TwitterUser
+
+    from . import db
+    session = db.Session()
+    
+    reader = session.query(MixedReader).join(TwitterUser).\
+        filter(TwitterUser.screen_name == screen_name).one()
+    reader.ignored = True
+    reader.rem_picks(0) # keep none
+
+    session.commit()
+    session.close()
