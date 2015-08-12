@@ -51,15 +51,6 @@ class MixedReader(DatabaseReader, AggregatorReader):
         "Load details from database."
         self.init()
 
-        # Picks
-        picks = {int(link_id): link_moment for \
-            link_id, link_moment in self.get_picks(withscores=True)}
-        links = MixedLink.query.filter(MixedLink.id.in_(picks.keys())).all()
-        for link in links:
-            link.moment = picks[link.id]
-        links.sort(key=attrgetter('moment'), reverse=True)
-        self._picks = links
-
         # Fellows
         fellows = {int(fellow_id): fellow_fellowship for \
             fellow_id, fellow_fellowship in self.get_fellows(withscores=True)}
@@ -71,6 +62,23 @@ class MixedReader(DatabaseReader, AggregatorReader):
         else:
             readers = []
         self._fellows = readers
+        fellows = self._fellows
+        fellows_dict = {f.id: f for f in fellows}
+
+        # Picks
+        picks = {int(link_id): link_moment for \
+            link_id, link_moment in self.get_picks(withscores=True)}
+        links = MixedLink.query.filter(MixedLink.id.in_(picks.keys())).all()
+        for link in links:
+            link.moment = picks[link.id]
+        links.sort(key=attrgetter('moment'), reverse=True)
+        for link in links:
+            pickers_ids = set(int(picker_id) for picker_id in link.get_pickers())
+            link_fellows = [fellows_dict[fid] for \
+                fid in pickers_ids.intersection(fellows_dict)]
+            link_fellows.sort(key=attrgetter('fellowship'), reverse=True)
+            link.fellows = [self] + link_fellows
+        self._picks = links
 
         # Edition
         edition_fellows = self.get_edition_fellows()
@@ -82,11 +90,10 @@ class MixedReader(DatabaseReader, AggregatorReader):
             for link in links:
                 link.relevance, link.fellows_ids = edition[link.id]
             links.sort(key=attrgetter('relevance'), reverse=True)
-            fellows = self._fellows
-            fellows_dict = {f.id: f for f in fellows}
             for link in links:
-                link.fellows = [fellows_dict[fid] for fid in link.fellows_ids]
-                link.fellows.sort(key=attrgetter('fellowship'), reverse=True)
+                link_fellows = [fellows_dict[fid] for fid in link.fellows_ids]
+                link_fellows.sort(key=attrgetter('fellowship'), reverse=True)
+                link.fellows = link_fellows
         else:
             links = []
         self._edition = links
