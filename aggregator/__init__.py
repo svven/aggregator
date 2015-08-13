@@ -65,15 +65,15 @@ def ignore(url_or_screen_name):
     Mark as ignored and remove its picks.
     Works for both link by url or reader by screen_name. 
     """
-    from mixes import MixedReader
-    from database.models import Link, TwitterUser
+    from mixes import MixedLink, MixedReader
+    from database.models import TwitterUser
 
     from . import db
     session = db.Session()
 
     if '/' in url_or_screen_name:
         url = url_or_screen_name
-        link = session.query(Link).filter_by(url=url).one()
+        link = session.query(MixedLink).filter_by(url=url).one()
         link.ignored = True
         link.rem_picks()
     else:
