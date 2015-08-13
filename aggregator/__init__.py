@@ -60,18 +60,28 @@ def clean(keep=config.PICKS_LIMIT):
             continue
         reader.rem_picks(keep)
 
-def ignore(screen_name):
-    "Mark specified user as ignored and clean its picks."
+def ignore(url_or_screen_name):
+    """
+    Mark as ignored and remove its picks.
+    Works for both link by url or reader by screen_name. 
+    """
     from mixes import MixedReader
-    from database.models import TwitterUser
+    from database.models import Link, TwitterUser
 
     from . import db
     session = db.Session()
-    
-    reader = session.query(MixedReader).join(TwitterUser).\
-        filter(TwitterUser.screen_name == screen_name).one()
-    reader.ignored = True
-    reader.rem_picks(0) # keep none
+
+    if '/' in url_or_screen_name:
+        url = url_or_screen_name
+        link = session.query(Link).filter_by(url=url).one()
+        link.ignored = True
+        link.rem_picks()
+    else:
+        screen_name = url_or_screen_name
+        reader = session.query(MixedReader).join(TwitterUser).\
+            filter(TwitterUser.screen_name == screen_name).one()
+        reader.ignored = True
+        reader.rem_picks(0) # keep none
 
     session.commit()
     session.close()

@@ -21,6 +21,7 @@ def _load(template):
 
 pick = r.register_script(_load('pick.lua'))
 unpick = r.register_script(_load('unpick.lua'))
-rem_picks = r.register_script(_load('rem_picks.lua'))
+rem_link_picks = r.register_script(_load('rem_link_picks.lua'))
+rem_reader_picks = r.register_script(_load('rem_reader_picks.lua'))
 set_fellows = r.register_script(_load('set_fellows.lua'))
 set_edition = r.register_script(_load('set_edition.lua'))

@@ -33,6 +33,11 @@ class Link(object):
         return r.zrange(keys.get(LINK_PICKERS, self.id),
             0, -1, desc=True, withscores=withscores)
 
+    # Maintenance methods
+    def rem_picks(self):
+        "Remove all link picks."
+        scripts.rem_link_picks(keys=[self.id])
+
 
 class Reader(object):
     """
@@ -105,5 +110,5 @@ class Reader(object):
 
     # Maintenance methods
     def rem_picks(self, keep=config.PICKS_LIMIT):
-        "Remove old picks, keep as many as specified."
-        scripts.rem_picks(keys=[self.id], args=[keep])
+        "Remove old reader picks, keep as many as specified."
+        scripts.rem_reader_picks(keys=[self.id], args=[keep])
