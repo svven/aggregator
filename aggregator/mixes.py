@@ -8,6 +8,7 @@ from models import \
     Link as AggregatorLink, Reader as AggregatorReader
 from database.models import \
     Link as DatabaseLink, Reader as DatabaseReader
+from database.models import Status, TwitterUser
 
 
 class MixedLink(DatabaseLink, AggregatorLink):
@@ -78,7 +79,9 @@ class MixedReader(DatabaseReader, AggregatorReader):
                 fid in pickers_ids.intersection(fellows_dict)]
             link_fellows.sort(key=attrgetter('fellowship'), reverse=True)
             link.fellows = [self] + link_fellows
+            link.statuses = {}
         self._picks = links
+        picks_dict = {l.id: l for l in links}
 
         # Edition
         edition_fellows = self.get_edition_fellows()
@@ -94,9 +97,24 @@ class MixedReader(DatabaseReader, AggregatorReader):
                 link_fellows = [fellows_dict[fid] for fid in link.fellows_ids]
                 link_fellows.sort(key=attrgetter('fellowship'), reverse=True)
                 link.fellows = link_fellows
+                link.statuses = {}
         else:
             links = []
         self._edition = links
+        edition_dict = {l.id: l for l in links}
+
+        # Statuses
+        link_ids = picks_dict.keys() + edition_dict.keys()
+        user_ids = [self.twitter_user_id] + [f.twitter_user_id for f in fellows]
+        print "Query Statuses"
+        statuses = Status.query.with_entities(
+            Status.link_id, Status.user_id, Status.status_id).filter(
+            Status.link_id.in_(link_ids), Status.user_id.in_(user_ids)).all()
+        for status in statuses:
+            link_id, user_id, status_id = (status[0], status[1], status[2])
+            link = picks_dict.get(link_id, edition_dict.get(link_id, None))
+            link.statuses[user_id] = status_id
+        print "Done"
 
     ## Loaded properties
     @property
