@@ -102,11 +102,11 @@ class Reader(object):
         scripts.set_fellows(keys=[self.id], 
             args=[AD(moment_min), AD(moment_max), picks_count])
 
-    def set_edition(self,
-        moment_min=None, moment_max=None, fellows_count=config.FELLOWS_COUNT):
+    def set_edition(self, moment_min=None, moment_max=None, 
+        fellows_count=config.FELLOWS_COUNT, picks_count=config.PICKS_COUNT):
         "Aggregate edition from moments interval based on fellows."
         scripts.set_edition(keys=[self.id],
-            args=[AD(moment_min), AD(moment_max), fellows_count])
+            args=[AD(moment_min), AD(moment_max), fellows_count, picks_count])
 
     # Maintenance methods
     def rem_picks(self, keep=config.PICKS_LIMIT):
