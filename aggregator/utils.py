@@ -5,7 +5,7 @@ Utility functions such as:
 - unzip zipped list;
 """
 import calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 from itertools import chain
 
 def munixtime(dt):
@@ -15,6 +15,10 @@ def munixtime(dt):
 def mdatetime(ut):
     "Convert unixtime to datetime."
     return datetime.utcfromtimestamp(ut)
+
+def timeago(**kvargs):
+    "Time ago by time delta."
+    return datetime.utcnow() - timedelta(**kvargs)
 
 
 def encode(u):
