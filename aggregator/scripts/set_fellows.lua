@@ -1,7 +1,7 @@
 -- KEYS[1] = reader_id
--- ARGV = [min_moment, max_moment, picks_count]
+-- ARGV = [min_moment, max_moment, picks_count, fellows_limit]
 local reader_id = KEYS[1]
-local moment_min, moment_max, picks_count = unpack(ARGV)
+local moment_min, moment_max, picks_count, fellows_limit = unpack(ARGV)
 if moment_min == 'None' then moment_min = '-inf' end
 if moment_max == 'None' then moment_max = '+inf' end
 
@@ -30,5 +30,7 @@ if #picks > 0 then
 		end
 	end
 	redis.call('zrem', fellows_key, reader_id)
+	redis.call('zremrangebyrank', fellows_key, 0 , -fellows_limit-1)
+	redis.call('expire', fellows_key, 60)
 	-- return redis.call('zrevrange', fellows_key, 0, -1, 'withscores')
 end

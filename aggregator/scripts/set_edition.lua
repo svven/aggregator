@@ -1,7 +1,7 @@
 -- KEYS[1] = reader_id
--- ARGV = [min_moment, max_moment, fellows_count, picks_count]
+-- ARGV = [min_moment, max_moment, fellows_count, news_limit]
 local reader_id = KEYS[1]
-local moment_min, moment_max, fellows_count, picks_count = unpack(ARGV)
+local moment_min, moment_max, fellows_count, news_limit = unpack(ARGV)
 if moment_min == 'None' then moment_min = '-inf' end
 if moment_max == 'None' then moment_max = '+inf' end
 
@@ -36,8 +36,10 @@ if #fellows_kvkv > 0 then
 		end
 	end
 	local picks_key = '{{ reader_picks }}' .. reader_id
-	local picks = redis.call('zrevrange', picks_key, 0, picks_count-1)
+	local picks = redis.call('zrevrange', picks_key, 0, -1)
 	redis.call('zrem', edition_key, unpack(picks))
+	redis.call('zremrangebyrank', edition_key, 0 , -news_limit-1)
+	redis.call('expire', edition_key, 60)
 	-- return redis.call('zrevrange', edition_key, 0, -1, 'withscores')
 	
 	local find = function(e, t)
