@@ -78,4 +78,5 @@ if #fellows_kvkv > 0 then
 			redis.call('hset', edition_fellows_key, link_id, link_fellows_key)
 		end
 	end
+	redis.call('expire', edition_fellows_key, 60)
 end
