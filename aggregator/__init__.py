@@ -41,6 +41,7 @@ def load(count=config.PICKS_LIMIT):
         ]))
         if picks:
             reader.pick(*picks)
+            reader.rem_picks()
 
 def aggregate():
     "Aggregate all loaded reader picks."
